@@ -180,3 +180,4 @@ function initialise() {
 
 initialise();
 state.nodes.push({ id: 0, payload: "null", connections: [] });
+internalDSLOutput();
