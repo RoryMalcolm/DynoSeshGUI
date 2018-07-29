@@ -43,13 +43,15 @@ let cy = (window.cy = cytoscape({
 function addEdge() {
   const source = document.getElementsByName("newEdge")[0].value;
   const target = document.getElementsByName("newEdge")[1].value;
-  const actor = document.getElementsByName("newEdge")[2].value;
-  if (source === "" || target === "" || actor === "") {
+  const toActor = document.getElementsByName("newEdge")[2].value;
+  const fromActor = document.getElementsByName("newEdge")[3].value;
+  if (source === "" || target === "" || toActor === "" || fromActor === "") {
     alert("New edge cannot be created, null value");
   } else {
     state.nodes[parseInt(source, 10)].connections.push({
       target: target,
-      actor: actor
+      toActor: toActor,
+      fromActor: fromActor
     });
     let edge = cy.add({
       group: "edges",
@@ -62,8 +64,9 @@ function addEdge() {
       content: () => {
         let div = document.createElement("div");
 
-        div.innerHTML = actor;
-
+        div.innerHTML = "<div>" +
+          "<p>toActor: " + toActor + "</p>" +
+          "<p>fromActor: " + fromActor + "</p></div>";
         document.body.appendChild(div);
 
         return div;
@@ -75,11 +78,11 @@ function addEdge() {
     edge.on("position", update);
     cy.on("click pan zoom resize", update);
   }
-  console.log(cy.elements('edge'));
   currentEdgeIndex++;
   document.getElementsByName("newEdge")[0].value = "";
   document.getElementsByName("newEdge")[1].value = "";
   document.getElementsByName("newEdge")[2].value = "";
+  document.getElementsByName("newEdge")[3].value = "";
   internalDSLOutput();
 }
 
@@ -135,11 +138,10 @@ function generateConnectionsCode(connectionsArray) {
   return connectionsArray
     .map(
       x =>
-        "    .connection()\n      .actor(\"" +
-        x.actor +
-        "\")\n      .to(\"" +
-        x.target +
-        "\")\n"
+        "    .connection()" +
+        "\n      .toActor(\"" + x.toActor + "\")" +
+        "\n      .fromActor(\"" + x.fromActor + "\")" +
+        "\n      .to(\"" + x.target + "\")\n"
     )
     .join("");
 }
